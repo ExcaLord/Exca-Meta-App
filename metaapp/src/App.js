@@ -1,15 +1,23 @@
+import { Routes, Route } from 'react-router';
 import './App.css';
-import Encabezamiento from './componentes/Encabezamiento';
-import Pie from './componentes/Pie';
-import Principal from './componentes/Principal';
-
+import Encabezado from './componentes/compartidos/Encabezado';
+import Pie from './componentes/compartidos/Pie';
+import Principal from './componentes/compartidos/Principal';
+import Lista from './componentes/lista/Lista'
+import Detalles from './componentes/nueva/Detalles';
 function App() {
   return (
-    <div className="App">
-      <Encabezamiento></Encabezamiento>
-      <Principal></Principal>
-      <Pie></Pie>
-    </div>
+    <Routes>
+      <Route path="/" element={<Detalles />} />
+      {/* <div className="App">
+        <Encabezado></Encabezado>
+        <Principal>
+          <Lista></Lista>
+          <Detalles></Detalles>
+        </Principal>
+        <Pie></Pie>
+      </div> */}
+    </Routes>
   );
 }
 
