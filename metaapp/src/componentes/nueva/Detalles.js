@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext, } from "react";
+import { useNavigate, useParams } from 'react-router-dom'
+import { Contexto } from "../../servicios/Memoria";
 import estilos from "./Detalles.module.css";
 
 function Detalles() {
+
+    const { id } = useParams();
 
     const [form,setForm] = useState ({
         detalles: '',
@@ -13,22 +17,49 @@ function Detalles() {
         completado: 0,
     });
 
+    const [estado, enviar] = useContext(Contexto);
+
     const { detalles, eventos, periodo, icono, meta, plazo, completado} = form;
 
     const onChange = (event, prop) => {
         setForm(estado => ({ ...estado, [prop]: event.target.value}));
     }
 
-    useEffect(() => {
-        /* console.log(form); */
-    }, [form]);
+    const metaMemoria = estado.objetos[id];
 
-    const crear = async () => {
-        console.log(form);
+    const navegar = useNavigate();
+
+    useEffect(() => {
+
+        if(!id) return;
+
+        if(!metaMemoria) {
+            return navegar('/404');
+        }
+        setForm(metaMemoria);
+    }, [id, metaMemoria, navegar]);
+
+    const crear = () => {
+        enviar({ tipo: 'crear', meta: form});
+        navegar('/lista');
+    }
+
+    const actualizar = () => {
+        enviar({ tipo: 'actualizar', meta: form});
+        navegar('/lista');
+    }
+
+    const borrar = () => {
+        enviar({ tipo: 'borrar', id});
+        navegar('/lista');
+    }
+
+    const cancelar = () => {
+        navegar('/lista');
     }
 
     const frecuencias = ["daily", "week", "month", "year"];
-    const iconos = ["🖥️", "🏃🏽", "📚", "💸", "🛒", "📈", "🚬", "🎉", "🎫", "🏀"];
+    const iconos = ["🧙","🖥️", "🏃🏽", "📚", "💸", "🛒", "📈", "🚬", "🎉", "🎫", "🏀"];
     return (
         <div className="tarjeta">
             <form className="p-4">
@@ -57,7 +88,7 @@ function Detalles() {
                             value={periodo}
                             onChange = {e => onChange(e,'periodo')}
                         >
-                        {frecuencias.map(opcion => <option value={opcion}>{opcion}</option>)} 
+                        {frecuencias.map(opcion => <option key={opcion} value={opcion}>{opcion}</option>)} 
                         </select>
                     </div>
                 </label>
@@ -102,16 +133,27 @@ function Detalles() {
                         value={icono}
                         onChange = {e => onChange(e,'icono')}
                     >
-                        {iconos.map(opcion => <option value={opcion}>{opcion}</option>)};
+                        {iconos.map(opcion => <option key={opcion} value={opcion}>{opcion}</option>)};
                     </select>
                 </label>
             </form>
             <div className={estilos.botones}>
-                <button 
+                {!id && <button 
                     className="boton boton--negro"
                     onClick={crear}
-                >Create</button>
-                <button className="boton boton--gris">Cancel</button>
+                >Create</button>}
+                {id && <button 
+                    className="boton boton--negro"
+                    onClick={actualizar}
+                >Update</button>}
+                {id && <button 
+                    className="boton boton--rojo"
+                    onClick={borrar}
+                >Delete</button>}
+                <button
+                 className="boton boton--gris"
+                 onClick={cancelar}
+                 >Cancel</button>
             </div>
         </div>
     );

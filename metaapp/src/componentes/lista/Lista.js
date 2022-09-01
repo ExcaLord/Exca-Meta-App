@@ -1,40 +1,25 @@
+import { useContext, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Contexto } from '../../servicios/Memoria';
+import { pedirMetas } from '../../servicios/Pedidos.js';
 import Meta from './Meta'
 
-const listaMock = [{
-    "id": '1',
-    "detalles": 'Jugar Minecraft 2 horas',
-    "periodo": 'day',
-    "eventos": 1,
-    "icono": '🧙',
-    "meta": 365,
-    "plazo": '2030-01-01',
-    "completado": 5,
-},
-{
-    "id": '2',
-    "detalles": 'Estudiar Programacion 3 horas',
-    "periodo": 'day',
-    "eventos": 3,
-    "icono": '🖥️',
-    "meta": 365,
-    "plazo": '2030-01-01',
-    "completado": 40,
-},
-{
-    "id": '3',
-    "detalles": 'Estudiar Data Analysis',
-    "periodo": 'day',
-    "eventos": 2,
-    "icono": '📊',
-    "meta": 365,
-    "plazo": '2030-01-01',
-    "completado": 25,
-}
-];
-
 function Lista() {
+
+    const [estado, enviar] = useContext(Contexto);
+
+    useEffect(() => {
+        const usarEfecto = async() => {
+            const metas = await pedirMetas();
+            enviar({tipo: 'colocar', metas });
+        }
+    }, []);
+    
     return ( 
-        listaMock.map(meta => <Meta {...meta}></Meta>)
+        <>
+            {estado.orden.map(id => <Meta key={id} {...estado.objetos[id]}></Meta>)}
+            <Outlet />
+        </>
      );
 }
 
