@@ -1,13 +1,14 @@
 import { useEffect, useState, useContext, } from "react";
 import { useNavigate, useParams } from 'react-router-dom'
 import { Contexto } from "../../servicios/Memoria";
+import { actualizarMeta, borrarMeta, crearMeta } from "../../servicios/Pedidos";
 import estilos from "./Detalles.module.css";
 
 function Detalles() {
 
     const { id } = useParams();
 
-    const [form,setForm] = useState ({
+    const [form, setForm] = useState ({
         detalles: '',
         eventos: 1,
         periodo: 'semana',
@@ -19,7 +20,7 @@ function Detalles() {
 
     const [estado, enviar] = useContext(Contexto);
 
-    const { detalles, eventos, periodo, icono, meta, plazo, completado} = form;
+    const {detalles, eventos, periodo, icono, meta, plazo, completado} = form;
 
     const onChange = (event, prop) => {
         setForm(estado => ({ ...estado, [prop]: event.target.value}));
@@ -39,18 +40,21 @@ function Detalles() {
         setForm(metaMemoria);
     }, [id, metaMemoria, navegar]);
 
-    const crear = () => {
-        enviar({ tipo: 'crear', meta: form});
+    const crear = async () => {
+        const nuevaMeta = await crearMeta();
+        enviar({ tipo: 'crear', meta: nuevaMeta});
         navegar('/lista');
     }
 
-    const actualizar = () => {
-        enviar({ tipo: 'actualizar', meta: form});
+    const actualizar =async () => {
+        const metaActualizada = await actualizarMeta();
+        enviar({ tipo: 'actualizar', meta: metaActualizada});
         navegar('/lista');
     }
 
-    const borrar = () => {
-        enviar({ tipo: 'borrar', id});
+    const borrar =async () => {
+        const idBorrada = await borrarMeta();
+        enviar({ tipo: 'borrar', id: idBorrada});
         navegar('/lista');
     }
 
